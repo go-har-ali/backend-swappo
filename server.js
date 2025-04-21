@@ -4,10 +4,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User.js");
 const Product = require("./models/Product.js");
+const TradeRequest = require("./models/Trade");
 const multer = require("multer");
 const path = require("path");
 const http = require("http");
-//const socketIO = require("socket.io");
+const socketIO = require("socket.io");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -15,31 +16,27 @@ require("dotenv").config();
 
 const productRoutes = require("./routes/products.js");
 const cartRoutes = require("./routes/cart.js");
+const tradeRequestsRoutes = require("./routes/tradeRequests");
 
 const app = express();
-//const server = http.createServer(app);
-
-// const io = socketIO(server, {
-//   cors: {
-//     origin: allowedOrigins, // ✅ Use the same list as above
-//     credentials: true,
-//     // origin: "https://frontend-swappo-app.vercel.app",
-//     // methods: ["GET", "POST"],
-//   },
-// });
-
-// const io = socketIO(server, {
-//   cors: {
-//     origin: "http://localhost:5173", // frontend URL
-//     methods: ["GET", "POST"],
-//   },
-// });
+const server = http.createServer(app);
 
 const allowedOrigins = [
-  //"http://localhost:5173",
+  "http://localhost:5173",
   "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
   "https://frontend-swappo-app.vercel.app",
+  "https://frontend-swappo-mern.vercel.app",
 ];
+
+const io = socketIO(server, {
+  cors: {
+    origin: allowedOrigins, // ✅ Use the same list as above
+    // origin: "http://localhost:5173",
+    // methods: ["GET", "POST"],
+
+    credentials: true,
+  },
+});
 
 app.use(
   cors({
@@ -72,33 +69,66 @@ mongoose
 
 mongoose.set("bufferTimeoutMS", 30000);
 
-// io.on("connection", (socket) => {
-//   console.log("User connected:", socket.id);
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
 
-//   // Listen for trade requests
-//   socket.on("tradeRequest", (data) => {
-//     const { toUserId, fromUserId, productId, offerValue } = data;
+  // Join room using userId to allow targeted messages
+  socket.on("join", (userId) => {
+    console.log("📥 JOIN REQUEST from user:", userId);
+    socket.join(userId);
+    console.log(`User ${userId} joined their room`);
+  });
 
-//     // Emit to the recipient user
-//     io.to(toUserId).emit("receiveTradeRequest", {
-//       fromUserId,
-//       productId,
-//       offerValue,
-//     });
-//   });
+  // Handle incoming trade request
+  socket.on("tradeRequest", async (data) => {
+    console.log("📨 Incoming trade request data:", data);
+    try {
+      const trade = new TradeRequest(data);
+      await trade.save();
 
-//   socket.on("respondToTrade", (data) => {
-//     io.to(data.fromUserId).emit("tradeResponse", data);
-//   });
+      console.log("✅ Trade request saved to DB:", trade);
 
-//   socket.on("join", (userId) => {
-//     socket.join(userId); // Use userId as room
-//   });
+      // Emit to the target user room
+      io.to(data.toUserId).emit("tradeRequestReceived", trade);
+      console.log(
+        `Trade request sent from ${data.fromUserId} to ${data.toUserId}`
+      );
+    } catch (error) {
+      console.error("Error saving trade request:", error);
+    }
+  });
 
-//   socket.on("disconnect", () => {
-//     console.log("User disconnected:", socket.id);
-//   });
-// });
+  // Handle accept/reject trade
+  socket.on("respondToTrade", async ({ tradeId, status }) => {
+    console.log("📥 Trade response received:", { tradeId, status });
+
+    try {
+      const trade = await TradeRequest.findByIdAndUpdate(
+        tradeId,
+        { status },
+        { new: true }
+      );
+
+      if (!trade) {
+        console.error("Trade not found");
+        return;
+      }
+
+      console.log("✅ Trade updated in DB:", trade);
+
+      // Notify the sender about the response
+      io.to(trade.fromUserId.toString()).emit("tradeResponse", trade);
+      console.log(`Trade ${tradeId} responded with: ${status}`);
+    } catch (error) {
+      console.error("Error responding to trade:", error);
+    }
+  });
+
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -116,6 +146,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/products", productRoutes);
 //app.use("api/products/inventory", productRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/trade-requests", tradeRequestsRoutes);
 
 app.post("/api/register", upload.single("profilePicture"), async (req, res) => {
   console.log("req body", req.body); // Debugging
@@ -203,4 +234,4 @@ async function isValidPassword(user, password) {
   return await bcrypt.compare(password, user.password); // assuming user.password is the hashed password
 }
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+server.listen(5000, () => console.log("Server running on port 5000"));
