@@ -27,6 +27,7 @@ const allowedOrigins = [
   "https://frontend-swappo-app.vercel.app",
   "https://frontend-swappo-mern.vercel.app",
   "https://frontend-swappo-learn.vercel.app",
+  "https://frontend-swappo-relearn.vercel.app",
 ];
 
 const io = socketIO(server, {
