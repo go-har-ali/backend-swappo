@@ -14,10 +14,6 @@ require("dotenv").config();
 
 // "dev": "nodemon server.js"
 
-const productRoutes = require("./routes/products.js");
-const cartRoutes = require("./routes/cart.js");
-const tradeRequestsRoutes = require("./routes/tradeRequests");
-
 const app = express();
 
 app.set("trust proxy", 1); // Trust Render proxy
@@ -39,6 +35,10 @@ app.use(
 );
 const server = http.createServer(app);
 
+const productRoutes = require("./routes/products.js");
+const cartRoutes = require("./routes/cart.js");
+const tradeRequestsRoutes = require("./routes/tradeRequests");
+
 const allowedOrigins = [
   //"http://localhost:5173",
   "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
@@ -47,6 +47,7 @@ const allowedOrigins = [
   "https://frontend-swappo-learn.vercel.app",
   "https://frontend-swappo-relearn.vercel.app",
   "https://frontend-swappo-earn.vercel.app",
+  "https://frontend-swappo-earnapp.vercel.app",
 ];
 
 const io = socketIO(server, {
