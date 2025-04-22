@@ -49,6 +49,7 @@ const allowedOrigins = [
   "https://frontend-swappo-earn.vercel.app",
   "https://frontend-swappo-earnapp.vercel.app",
   "https://frontend-swappo-earnapplogic.vercel.app",
+  "https://frontend-swappo-eapp.vercel.app",
 ];
 
 const io = socketIO(server, {
