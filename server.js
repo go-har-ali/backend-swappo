@@ -19,6 +19,24 @@ const cartRoutes = require("./routes/cart.js");
 const tradeRequestsRoutes = require("./routes/tradeRequests");
 
 const app = express();
+
+app.set("trust proxy", 1); // Trust Render proxy
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      console.log("🚨 Incoming request origin:", origin); // Add this line
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("❌ CORS BLOCKED:", origin); // Debug log
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 const server = http.createServer(app);
 
 const allowedOrigins = [
@@ -38,24 +56,10 @@ const io = socketIO(server, {
     // methods: ["GET", "POST"],
 
     credentials: true,
+
+    methods: ["GET", "POST"], // Optional but helps
   },
 });
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      console.log("🚨 Incoming request origin:", origin); // Add this line
-
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log("❌ CORS BLOCKED:", origin); // Debug log
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
 
 //app.use(cors());
 app.use(express.json()); // For parsing JSON body
