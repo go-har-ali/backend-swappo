@@ -44,9 +44,12 @@ const io = socketIO(server, {
 app.use(
   cors({
     origin: function (origin, callback) {
+      console.log("🚨 Incoming request origin:", origin); // Add this line
+
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.log("❌ CORS BLOCKED:", origin); // Debug log
         callback(new Error("Not allowed by CORS"));
       }
     },
