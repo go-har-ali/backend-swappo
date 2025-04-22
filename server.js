@@ -53,7 +53,7 @@ app.use(
   })
 );
 
-app.use(cors());
+//app.use(cors());
 app.use(express.json()); // For parsing JSON body
 app.use(express.urlencoded({ extended: true })); // For form data
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
