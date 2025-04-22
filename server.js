@@ -22,7 +22,7 @@ const app = express();
 const server = http.createServer(app);
 
 const allowedOrigins = [
-  "http://localhost:5173",
+  //"http://localhost:5173",
   "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
   "https://frontend-swappo-app.vercel.app",
   "https://frontend-swappo-mern.vercel.app",
