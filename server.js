@@ -35,12 +35,22 @@ const app = express();
 // );
 const server = http.createServer(app);
 
-// Allow your frontend domain
-const allowedOrigins = ["https://frontend-swappo-eapp.vercel.app"];
+const allowedOrigins = [
+  "https://frontend-swappo-eapp.vercel.app",
+  "http://localhost:5171", // optional for local dev
+];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      console.log("🚨 Incoming request origin:", origin);
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("❌ CORS BLOCKED:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
