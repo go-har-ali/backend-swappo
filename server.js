@@ -20,29 +20,37 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
   "https://frontend-swappo-eapp.vercel.app",
-  "http://localhost:5171", // optional for local dev
+  "http://localhost:5171",
 ];
 
+// CORS for REST APIs
 app.use(
   cors({
     origin: (origin, callback) => {
-      console.log("🚨 Incoming request origin:", origin);
+      console.log("🚨 Incoming REST request origin:", origin);
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        console.log("❌ CORS BLOCKED:", origin);
+        console.log("❌ CORS BLOCKED (REST):", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
-    methods: ["GET", "POST"],
     credentials: true,
   })
 );
 
-// Setup Socket.IO with CORS
-const io = new socketIO(server, {
+// Socket.IO CORS config
+const io = new socketIO.Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      console.log("🔥 [Socket.IO] Incoming request origin:", origin);
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("❌ [Socket.IO] CORS BLOCKED:", origin);
+        callback(new Error("Not allowed by Socket.IO CORS"));
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true,
   },
