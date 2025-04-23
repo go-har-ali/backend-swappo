@@ -46,7 +46,7 @@ app.use(
 );
 
 // Setup Socket.IO with CORS
-const io = new Server(server, {
+const io = new socketIO(server, {
   cors: {
     origin: allowedOrigins,
     methods: ["GET", "POST"],
