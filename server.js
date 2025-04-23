@@ -20,6 +20,7 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
   "https://frontend-swappo-eapp.vercel.app",
+  "https://frontend-swappo-eappe.vercel.app",
   "http://localhost:5171",
 ];
 
