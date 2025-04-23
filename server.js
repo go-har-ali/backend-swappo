@@ -19,45 +19,71 @@ const app = express();
 const server = http.createServer(app);
 
 const allowedOrigins = [
+  //"http://localhost:5173",
+  "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
+  "https://frontend-swappo-app.vercel.app",
+  "https://frontend-swappo-mern.vercel.app",
+  "https://frontend-swappo-learn.vercel.app",
+  "https://frontend-swappo-relearn.vercel.app",
+  "https://frontend-swappo-earn.vercel.app",
+  "https://frontend-swappo-earnapp.vercel.app",
+  "https://frontend-swappo-earnapplogic.vercel.app",
   "https://frontend-swappo-eapp.vercel.app",
   "https://frontend-swappo-eappe.vercel.app",
-  "http://localhost:5171",
 ];
 
-// CORS for REST APIs
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      console.log("🚨 Incoming REST request origin:", origin);
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log("❌ CORS BLOCKED (REST):", origin);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
-
-// Socket.IO CORS config
-const io = new socketIO.Server(server, {
+const io = socketIO(server, {
   cors: {
-    origin: (origin, callback) => {
-      console.log("🔥 [Socket.IO] Incoming request origin:", origin);
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log("❌ [Socket.IO] CORS BLOCKED:", origin);
-        callback(new Error("Not allowed by Socket.IO CORS"));
-      }
-    },
-    methods: ["GET", "POST"],
+    origin: allowedOrigins, // ✅ Use the same list as above
+    // origin: "http://localhost:5173",
+    // methods: ["GET", "POST"],
+
     credentials: true,
+
+    methods: ["GET", "POST"], // Optional but helps
   },
 });
 
-//app.use(cors());
+// const allowedOrigins = [
+//   "https://frontend-swappo-eapp.vercel.app",
+//   "https://frontend-swappo-eappe.vercel.app",
+//   "http://localhost:5171",
+// ];
+
+// // CORS for REST APIs
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       console.log("🚨 Incoming REST request origin:", origin);
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         console.log("❌ CORS BLOCKED (REST):", origin);
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true,
+//   })
+// );
+
+// // Socket.IO CORS config
+// const io = new socketIO.Server(server, {
+//   cors: {
+//     origin: (origin, callback) => {
+//       console.log("🔥 [Socket.IO] Incoming request origin:", origin);
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         console.log("❌ [Socket.IO] CORS BLOCKED:", origin);
+//         callback(new Error("Not allowed by Socket.IO CORS"));
+//       }
+//     },
+//     methods: ["GET", "POST"],
+//     credentials: true,
+//   },
+// });
+
+app.use(cors());
 app.use(express.json()); // For parsing JSON body
 app.use(express.urlencoded({ extended: true })); // For form data
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
@@ -65,31 +91,6 @@ app.use("/uploads", express.static("uploads")); // Serve uploaded images
 const productRoutes = require("./routes/products.js");
 const cartRoutes = require("./routes/cart.js");
 const tradeRequestsRoutes = require("./routes/tradeRequests");
-
-// const allowedOrigins = [
-//   //"http://localhost:5173",
-//   "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
-//   "https://frontend-swappo-app.vercel.app",
-//   "https://frontend-swappo-mern.vercel.app",
-//   "https://frontend-swappo-learn.vercel.app",
-//   "https://frontend-swappo-relearn.vercel.app",
-//   "https://frontend-swappo-earn.vercel.app",
-//   "https://frontend-swappo-earnapp.vercel.app",
-//   "https://frontend-swappo-earnapplogic.vercel.app",
-//   "https://frontend-swappo-eapp.vercel.app",
-// ];
-
-// const io = socketIO(server, {
-//   cors: {
-//     origin: allowedOrigins, // ✅ Use the same list as above
-//     // origin: "http://localhost:5173",
-//     // methods: ["GET", "POST"],
-
-//     credentials: true,
-
-//     //methods: ["GET", "POST"], // Optional but helps
-//   },
-// });
 
 // || "mongodb://localhost:27017/swappo"
 
