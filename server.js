@@ -34,6 +34,7 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
+    methods: ["GET", "POST"],
     credentials: true,
   })
 );
@@ -46,6 +47,11 @@ const io = new socketIO(server, {
     credentials: true,
   },
 });
+
+//app.use(cors());
+app.use(express.json()); // For parsing JSON body
+app.use(express.urlencoded({ extended: true })); // For form data
+app.use("/uploads", express.static("uploads")); // Serve uploaded images
 
 const productRoutes = require("./routes/products.js");
 const cartRoutes = require("./routes/cart.js");
@@ -75,11 +81,6 @@ const tradeRequestsRoutes = require("./routes/tradeRequests");
 //     //methods: ["GET", "POST"], // Optional but helps
 //   },
 // });
-
-app.use(cors());
-app.use(express.json()); // For parsing JSON body
-app.use(express.urlencoded({ extended: true })); // For form data
-app.use("/uploads", express.static("uploads")); // Serve uploaded images
 
 // || "mongodb://localhost:27017/swappo"
 
