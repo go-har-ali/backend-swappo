@@ -16,53 +16,72 @@ require("dotenv").config();
 
 const app = express();
 
-app.set("trust proxy", 1); // Trust Render proxy
+// app.set("trust proxy", 1); // Trust Render proxy
+
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       console.log("🚨 Incoming request origin:", origin); // Add this line
+
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         console.log("❌ CORS BLOCKED:", origin); // Debug log
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true,
+//   })
+// );
+const server = http.createServer(app);
+
+// Allow your frontend domain
+const allowedOrigins = ["https://frontend-swappo-eapp.vercel.app"];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      console.log("🚨 Incoming request origin:", origin); // Add this line
-
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log("❌ CORS BLOCKED:", origin); // Debug log
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
   })
 );
-const server = http.createServer(app);
+
+// Setup Socket.IO with CORS
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
 const productRoutes = require("./routes/products.js");
 const cartRoutes = require("./routes/cart.js");
 const tradeRequestsRoutes = require("./routes/tradeRequests");
 
-const allowedOrigins = [
-  //"http://localhost:5173",
-  "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
-  "https://frontend-swappo-app.vercel.app",
-  "https://frontend-swappo-mern.vercel.app",
-  "https://frontend-swappo-learn.vercel.app",
-  "https://frontend-swappo-relearn.vercel.app",
-  "https://frontend-swappo-earn.vercel.app",
-  "https://frontend-swappo-earnapp.vercel.app",
-  "https://frontend-swappo-earnapplogic.vercel.app",
-  "https://frontend-swappo-eapp.vercel.app",
-];
+// const allowedOrigins = [
+//   //"http://localhost:5173",
+//   "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
+//   "https://frontend-swappo-app.vercel.app",
+//   "https://frontend-swappo-mern.vercel.app",
+//   "https://frontend-swappo-learn.vercel.app",
+//   "https://frontend-swappo-relearn.vercel.app",
+//   "https://frontend-swappo-earn.vercel.app",
+//   "https://frontend-swappo-earnapp.vercel.app",
+//   "https://frontend-swappo-earnapplogic.vercel.app",
+//   "https://frontend-swappo-eapp.vercel.app",
+// ];
 
-const io = socketIO(server, {
-  cors: {
-    origin: allowedOrigins, // ✅ Use the same list as above
-    // origin: "http://localhost:5173",
-    // methods: ["GET", "POST"],
+// const io = socketIO(server, {
+//   cors: {
+//     origin: allowedOrigins, // ✅ Use the same list as above
+//     // origin: "http://localhost:5173",
+//     // methods: ["GET", "POST"],
 
-    credentials: true,
+//     credentials: true,
 
-    //methods: ["GET", "POST"], // Optional but helps
-  },
-});
+//     //methods: ["GET", "POST"], // Optional but helps
+//   },
+// });
 
 //app.use(cors());
 app.use(express.json()); // For parsing JSON body
