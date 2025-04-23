@@ -16,23 +16,6 @@ require("dotenv").config();
 
 const app = express();
 
-// app.set("trust proxy", 1); // Trust Render proxy
-
-// app.use(
-//   cors({
-//     origin: function (origin, callback) {
-//       console.log("🚨 Incoming request origin:", origin); // Add this line
-
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         console.log("❌ CORS BLOCKED:", origin); // Debug log
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     credentials: true,
-//   })
-// );
 const server = http.createServer(app);
 
 const allowedOrigins = [
@@ -93,7 +76,7 @@ const tradeRequestsRoutes = require("./routes/tradeRequests");
 //   },
 // });
 
-//app.use(cors());
+app.use(cors());
 app.use(express.json()); // For parsing JSON body
 app.use(express.urlencoded({ extended: true })); // For form data
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
