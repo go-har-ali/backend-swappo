@@ -16,19 +16,19 @@ require("dotenv").config();
 
 const app = express();
 
-// const allowedOrigins = [
-//   "http://localhost:5173",
-//   "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
-//   "https://frontend-swappo-app.vercel.app",
-//   "https://frontend-swappo-mern.vercel.app",
-//   "https://frontend-swappo-learn.vercel.app",
-//   "https://frontend-swappo-relearn.vercel.app",
-//   "https://frontend-swappo-earn.vercel.app",
-//   "https://frontend-swappo-earnapp.vercel.app",
-//   "https://frontend-swappo-earnapplogic.vercel.app",
-//   "https://frontend-swappo-eapp.vercel.app",
-//   "https://frontend-swappo-eappe.vercel.app",
-// ];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
+  "https://frontend-swappo-app.vercel.app",
+  "https://frontend-swappo-mern.vercel.app",
+  "https://frontend-swappo-learn.vercel.app",
+  "https://frontend-swappo-relearn.vercel.app",
+  "https://frontend-swappo-earn.vercel.app",
+  "https://frontend-swappo-earnapp.vercel.app",
+  "https://frontend-swappo-earnapplogic.vercel.app",
+  "https://frontend-swappo-eapp.vercel.app",
+  "https://frontend-swappo-eappe.vercel.app",
+];
 
 // CORS for Express
 // const corsOptions = {
@@ -40,16 +40,21 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["https://frontend-swappo-eappe.vercel.app"], // allow your deployed frontend
+    origin: allowedOrigins, // allow your deployed frontend
     credentials: true,
   })
 );
+
+// app.use(cors());
+app.use(express.json()); // For parsing JSON body
+app.use(express.urlencoded({ extended: true })); // For form data
+app.use("/uploads", express.static("uploads")); // Serve uploaded images
 
 const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
-    origin: ["https://frontend-swappo-eappe.vercel.app"], // ✅ Use the same list as above
+    origin: allowedOrigins, // ✅ Use the same list as above
     // origin: "http://localhost:5173",
     // methods: ["GET", "POST"],
 
@@ -58,11 +63,6 @@ const io = socketIO(server, {
     methods: ["GET", "POST"], // Optional but helps
   },
 });
-
-// app.use(cors());
-app.use(express.json()); // For parsing JSON body
-app.use(express.urlencoded({ extended: true })); // For form data
-app.use("/uploads", express.static("uploads")); // Serve uploaded images
 
 const productRoutes = require("./routes/products.js");
 const cartRoutes = require("./routes/cart.js");
@@ -82,19 +82,19 @@ mongoose
 mongoose.set("bufferTimeoutMS", 30000);
 
 // Add this middleware BEFORE your socket.io connection
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
+// app.use((req, res, next) => {
+//   const origin = req.headers.origin;
+//   if (allowedOrigins.includes(origin)) {
+//     res.header("Access-Control-Allow-Origin", origin);
+//   }
+//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.header("Access-Control-Allow-Credentials", "true");
+//   if (req.method === "OPTIONS") {
+//     return res.sendStatus(200);
+//   }
+//   next();
+// });
 
 app.use((req, res, next) => {
   const origin =
