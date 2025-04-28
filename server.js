@@ -16,10 +16,8 @@ require("dotenv").config();
 
 const app = express();
 
-const server = http.createServer(app);
-
 const allowedOrigins = [
-  //"http://localhost:5173",
+  "http://localhost:5173",
   "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
   "https://frontend-swappo-app.vercel.app",
   "https://frontend-swappo-mern.vercel.app",
@@ -44,46 +42,17 @@ const io = socketIO(server, {
   },
 });
 
-// const allowedOrigins = [
-//   "https://frontend-swappo-eapp.vercel.app",
-//   "https://frontend-swappo-eappe.vercel.app",
-//   "http://localhost:5171",
-// ];
+// CORS for Express
+const corsOptions = {
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+};
+app.use(cors(corsOptions)); // ✅ this one
 
-// // CORS for REST APIs
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       console.log("🚨 Incoming REST request origin:", origin);
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         console.log("❌ CORS BLOCKED (REST):", origin);
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     credentials: true,
-//   })
-// );
+const server = http.createServer(app);
 
-// // Socket.IO CORS config
-// const io = new socketIO.Server(server, {
-//   cors: {
-//     origin: (origin, callback) => {
-//       console.log("🔥 [Socket.IO] Incoming request origin:", origin);
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         console.log("❌ [Socket.IO] CORS BLOCKED:", origin);
-//         callback(new Error("Not allowed by Socket.IO CORS"));
-//       }
-//     },
-//     methods: ["GET", "POST"],
-//     credentials: true,
-//   },
-// });
-
-app.use(cors());
+// app.use(cors());
 app.use(express.json()); // For parsing JSON body
 app.use(express.urlencoded({ extended: true })); // For form data
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
