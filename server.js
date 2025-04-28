@@ -30,6 +30,16 @@ const allowedOrigins = [
   "https://frontend-swappo-eappe.vercel.app",
 ];
 
+// CORS for Express
+const corsOptions = {
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+};
+app.use(cors(corsOptions)); // ✅ this one
+
+const server = http.createServer(app);
+
 const io = socketIO(server, {
   cors: {
     origin: allowedOrigins, // ✅ Use the same list as above
@@ -41,16 +51,6 @@ const io = socketIO(server, {
     methods: ["GET", "POST"], // Optional but helps
   },
 });
-
-// CORS for Express
-const corsOptions = {
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-};
-app.use(cors(corsOptions)); // ✅ this one
-
-const server = http.createServer(app);
 
 // app.use(cors());
 app.use(express.json()); // For parsing JSON body
