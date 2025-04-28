@@ -89,6 +89,13 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  const origin =
+    req.headers.origin || req.headers.referer || req.headers.host || "unknown";
+  console.log(`🚨 Incoming request origin: ${origin}`);
+  next();
+});
+
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
