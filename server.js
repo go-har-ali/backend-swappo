@@ -16,33 +16,40 @@ require("dotenv").config();
 
 const app = express();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
-  "https://frontend-swappo-app.vercel.app",
-  "https://frontend-swappo-mern.vercel.app",
-  "https://frontend-swappo-learn.vercel.app",
-  "https://frontend-swappo-relearn.vercel.app",
-  "https://frontend-swappo-earn.vercel.app",
-  "https://frontend-swappo-earnapp.vercel.app",
-  "https://frontend-swappo-earnapplogic.vercel.app",
-  "https://frontend-swappo-eapp.vercel.app",
-  "https://frontend-swappo-eappe.vercel.app",
-];
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "https://frontend-swappo-late-app.vercel.app", // ✅ Add this one!
+//   "https://frontend-swappo-app.vercel.app",
+//   "https://frontend-swappo-mern.vercel.app",
+//   "https://frontend-swappo-learn.vercel.app",
+//   "https://frontend-swappo-relearn.vercel.app",
+//   "https://frontend-swappo-earn.vercel.app",
+//   "https://frontend-swappo-earnapp.vercel.app",
+//   "https://frontend-swappo-earnapplogic.vercel.app",
+//   "https://frontend-swappo-eapp.vercel.app",
+//   "https://frontend-swappo-eappe.vercel.app",
+// ];
 
 // CORS for Express
-const corsOptions = {
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-};
-app.use(cors(corsOptions)); // ✅ this one
+// const corsOptions = {
+//   origin: allowedOrigins,
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+// };
+// app.use(cors(corsOptions)); // ✅ this one
+
+app.use(
+  cors({
+    origin: ["https://frontend-swappo-eappe.vercel.app"], // allow your deployed frontend
+    credentials: true,
+  })
+);
 
 const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
-    origin: allowedOrigins, // ✅ Use the same list as above
+    origin: ["https://frontend-swappo-eappe.vercel.app"], // ✅ Use the same list as above
     // origin: "http://localhost:5173",
     // methods: ["GET", "POST"],
 
