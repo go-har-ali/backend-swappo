@@ -15,6 +15,7 @@ require("dotenv").config();
 // "dev": "nodemon server.js"
 
 const app = express();
+const server = http.createServer(app);
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -46,12 +47,10 @@ app.use(
   })
 );
 
-// app.use(cors());
+app.use(cors());
 app.use(express.json()); // For parsing JSON body
 app.use(express.urlencoded({ extended: true })); // For form data
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
-
-const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
