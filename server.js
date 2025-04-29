@@ -82,9 +82,11 @@ mongoose
 mongoose.set("bufferTimeoutMS", 30000);
 
 app.use((req, res, next) => {
-  const origin =
-    req.headers.origin || req.headers.referer || req.headers.host || "unknown";
-  console.log(`🚨 Incoming request origin: ${origin}`);
+  const origin = req.get("origin") || req.get("referer") || "unknown";
+  const host = req.get("host") || "unknown";
+
+  console.log(`🚨 Origin: ${origin} | Host: ${host} | URL: ${req.url}`);
+
   next();
 });
 
